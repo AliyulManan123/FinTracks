@@ -1,0 +1,26 @@
+<%- include('../layouts/main', { body: `
+  <h1 class="text-2xl font-semibold mb-4">Investments</h1>
+
+  <div class="bg-white p-4 rounded shadow">
+    <div class="flex gap-6">
+      <div><span class="text-gray-500">Cost</span><div class="text-lg font-semibold">IDR ${numberFormat(totals.totalCost)}</div></div>
+      <div><span class="text-gray-500">Value</span><div class="text-lg font-semibold">IDR ${numberFormat(totals.totalValue)}</div></div>
+      <div><span class="text-gray-500">P/L</span><div class="text-lg font-semibold ${totals.pnl >= 0 ? 'text-green-600' : 'text-red-600'}">IDR ${numberFormat(totals.pnl)}</div></div>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow mt-4 overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead><tr class="text-left border-b"><th class="p-2">Symbol</th><th class="p-2">Qty</th><th class="p-2">Avg Price</th></tr></thead>
+      <tbody>
+        ${holdings.map(h => `
+          <tr class="border-b">
+            <td class="p-2">${h.symbol}</td>
+            <td class="p-2">${h.quantity}</td>
+            <td class="p-2">${numberFormat(h.avgPrice)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+` }) %>
