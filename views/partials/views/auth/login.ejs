@@ -1,0 +1,21 @@
+<%- include('../layouts/main', { body: `
+  <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-semibold mb-4">Login</h1>
+    <form action="/auth/login?_csrf=${csrfToken}" method="post" class="space-y-3">
+      <div>
+        <label class="block text-sm">Email</label>
+        <input name="email" type="email" required class="w-full border p-2 rounded">
+      </div>
+      <div>
+        <label class="block text-sm">Password</label>
+        <input name="password" type="password" required class="w-full border p-2 rounded">
+      </div>
+      <button class="w-full bg-gray-900 text-white py-2 rounded">Login</button>
+    </form>
+    <div class="flex gap-2 mt-4">
+      <a href="/auth/google" class="flex-1 text-center border py-2 rounded">Login with Google</a>
+      <a href="/auth/github" class="flex-1 text-center border py-2 rounded">Login with GitHub</a>
+    </div>
+    <p class="mt-4 text-sm">No account? <a class="underline" href="/auth/register">Register</a></p>
+  </div>
+` }) %>
