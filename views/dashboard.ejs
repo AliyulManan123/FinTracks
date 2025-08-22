@@ -1,0 +1,51 @@
+<%- include('layouts/main', { body: `
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-gray-500 text-sm">This Month Income</p>
+      <p class="text-2xl font-semibold">IDR ${numberFormat(summary.monthIncome)}</p>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-gray-500 text-sm">This Month Expense</p>
+      <p class="text-2xl font-semibold">IDR ${numberFormat(summary.monthExpense)}</p>
+    </div>
+    <div class="bg-white p-4 rounded shadow">
+      <p class="text-gray-500 text-sm">Net Worth</p>
+      <p class="text-2xl font-semibold">IDR ${numberFormat(summary.netWorth)}</p>
+    </div>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow mt-4">
+    <h2 class="text-lg font-semibold mb-2">Expense Breakdown</h2>
+    <canvas id="expenseDonut" height="120"></canvas>
+  </div>
+
+  <div class="bg-white p-4 rounded shadow mt-4">
+    <h2 class="text-lg font-semibold mb-2">Latest Transactions</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead>
+          <tr class="text-left border-b">
+            <th class="p-2">Date</th>
+            <th class="p-2">Account</th>
+            <th class="p-2">Category</th>
+            <th class="p-2">Type</th>
+            <th class="p-2 text-right">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${summary.latest.map(t => `
+            <tr class="border-b">
+              <td class="p-2">${new Date(t.date).toISOString().slice(0,10)}</td>
+              <td class="p-2">${t.account.name}</td>
+              <td class="p-2">${t.category ? t.category.name : 'Uncategorized'}</td>
+              <td class="p-2">${t.type}</td>
+              <td class="p-2 text-right">${numberFormat(t.amount)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/public/js/dashboard.js"></script>
+` }) %>
