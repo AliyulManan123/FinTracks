@@ -1,0 +1,30 @@
+<%- include('../layouts/main', { body: `
+  <h1 class="text-2xl font-semibold mb-4">Reports</h1>
+
+  <form action="/reports/export" method="get" class="bg-white p-4 rounded shadow flex flex-wrap gap-3 items-end">
+    <input type="hidden" name="_csrf" value="${csrfToken}" />
+    <div>
+      <label class="block text-sm">From</label>
+      <input type="date" name="from" class="border p-2 rounded" />
+    </div>
+    <div>
+      <label class="block text-sm">To</label>
+      <input type="date" name="to" class="border p-2 rounded" />
+    </div>
+    <div>
+      <label class="block text-sm">Format</label>
+      <select name="format" class="border p-2 rounded">
+        <option value="pdf">PDF</option>
+        <option value="csv">CSV</option>
+      </select>
+    </div>
+    <button class="px-3 py-2 bg-gray-900 text-white rounded">Export</button>
+  </form>
+
+  <div class="bg-white p-4 rounded shadow mt-4">
+    <h2 class="text-lg font-semibold mb-2">This Month Overview</h2>
+    <div>Income: IDR ${numberFormat(overview.income)}</div>
+    <div>Expense: IDR ${numberFormat(overview.expense)}</div>
+    <div>Savings: IDR ${numberFormat(overview.savings)}</div>
+  </div>
+` }) %>
