@@ -1,0 +1,19 @@
+<nav class="bg-white shadow">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="/dashboard" class="text-xl font-semibold">Apex Finance</a>
+    <% if (currentUser) { %>
+      <div class="flex items-center gap-4">
+        <a class="hover:underline" href="/dashboard">Dashboard</a>
+        <a class="hover:underline" href="/transactions">Transactions</a>
+        <a class="hover:underline" href="/planning">Planning</a>
+        <a class="hover:underline" href="/investments">Investments</a>
+        <a class="hover:underline" href="/debts">Debts</a>
+        <a class="hover:underline" href="/reports">Reports</a>
+        <a class="hover:underline" href="/settings">Settings</a>
+        <form action="/auth/logout?_csrf=<%= csrfToken %>" method="post">
+          <button class="px-3 py-1 bg-gray-900 text-white rounded" type="submit">Logout</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</nav>
