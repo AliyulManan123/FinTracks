@@ -68,6 +68,7 @@ model Category {
 
   subCategories SubCategory[]
   transactions  Transaction[]
+  budgets            Budget[]
   @@unique([userId, name])
 }
 
