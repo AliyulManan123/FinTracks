@@ -1,0 +1,123 @@
+<%- include('../layouts/main', { body: `
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold">Transactions</h1>
+    <button id="btnOpenAdd" class="px-3 py-2 bg-gray-900 text-white rounded">Add</button>
+  </div>
+
+  <form class="bg-white p-3 rounded shadow mb-4 flex flex-wrap gap-2" method="get" action="/transactions">
+    <input type="hidden" name="_csrf" value="${csrfToken}" />
+    <input name="q" placeholder="Search" value="${filters.q || ''}" class="border p-2 rounded">
+    <select name="category" class="border p-2 rounded">
+      <option value="">All categories</option>
+      ${categories.map(c => `<option value="${c.name}" ${filters.category === c.name ? 'selected' : ''}>${c.name}</option>`).join('')}
+    </select>
+    <select name="type" class="border p-2 rounded">
+      <option value="">All types</option>
+      ${['INCOME','EXPENSE','TRANSFER'].map(t => `<option ${filters.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+    </select>
+    <select name="sort" class="border p-2 rounded">
+      <option value="date.desc" ${filters.sort==='date.desc'?'selected':''}>Newest</option>
+      <option value="date.asc" ${filters.sort==='date.asc'?'selected':''}>Oldest</option>
+      <option value="amount.desc" ${filters.sort==='amount.desc'?'selected':''}>Amount high</option>
+      <option value="amount.asc" ${filters.sort==='amount.asc'?'selected':''}>Amount low</option>
+    </select>
+    <button class="px-3 py-2 bg-white border rounded">Apply</button>
+  </form>
+
+  <div class="bg-white rounded shadow overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="text-left border-b">
+          <th class="p-2">Date</th>
+          <th class="p-2">Account</th>
+          <th class="p-2">Category</th>
+          <th class="p-2">Type</th>
+          <th class="p-2">Description</th>
+          <th class="p-2">Tags</th>
+          <th class="p-2 text-right">Amount</th>
+          <th class="p-2 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="txTableBody">
+        ${data.items.map(t => `
+          <tr class="border-b">
+            <td class="p-2">${new Date(t.date).toISOString().slice(0,10)}</td>
+            <td class="p-2">${t.account.name}</td>
+            <td class="p-2">${t.category ? t.category.name : 'Uncategorized'}</td>
+            <td class="p-2">${t.type}</td>
+            <td class="p-2">${t.description || ''}</td>
+            <td class="p-2">${(t.tags || []).join(', ')}</td>
+            <td class="p-2 text-right">${numberFormat(t.amount)}</td>
+            <td class="p-2 text-right">
+              <button class="text-blue-600 underline btnEdit" data-id="${t.id}">Edit</button>
+              <button class="text-red-600 underline btnDelete" data-id="${t.id}">Delete</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="flex justify-end gap-2 mt-3">
+    ${Array.from({length: data.pages}, (_, i) => i + 1).map(p => `
+      <a class="px-3 py-1 border rounded ${data.page===p ? 'bg-gray-900 text-white' : 'bg-white'}" href="?page=${p}&pageSize=${data.pageSize}&category=${filters.category||''}&type=${filters.type||''}&sort=${filters.sort||''}&q=${filters.q||''}">${p}</a>
+    `).join('')}
+  </div>
+
+  <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center">
+    <div class="bg-white rounded shadow w-full max-w-lg p-4">
+      <h2 class="text-lg font-semibold mb-2" id="modalTitle">Add Transaction</h2>
+      <form id="txForm" class="grid grid-cols-2 gap-3">
+        <input type="hidden" name="_csrf" value="${csrfToken}" />
+        <input type="hidden" name="id" />
+        <div>
+          <label class="block text-sm">Account</label>
+          <select name="accountId" required class="border p-2 rounded w-full">
+            ${accounts.map(a => `<option value="${a.id}">${a.name}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm">Type</label>
+          <select name="type" required class="border p-2 rounded w-full">
+            <option>INCOME</option><option>EXPENSE</option><option>TRANSFER</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm">Amount</label>
+          <input name="amount" type="number" step="0.01" required class="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label class="block text-sm">Date</label>
+          <input name="date" type="date" value="${new Date().toISOString().slice(0,10)}" class="border p-2 rounded w-full" />
+        </div>
+        <div>
+          <label class="block text-sm">Category</label>
+          <select name="categoryId" class="border p-2 rounded w-full">
+            <option value="">Uncategorized</option>
+            ${categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm">SubCategory</label>
+          <select name="subCategoryId" class="border p-2 rounded w-full">
+            <option value="">None</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-sm">Description</label>
+          <input name="description" class="border p-2 rounded w-full" />
+        </div>
+        <div class="col-span-2">
+          <label class="block text-sm">Tags (comma separated)</label>
+          <input name="tags" class="border p-2 rounded w-full" />
+        </div>
+        <div class="col-span-2 flex justify-end gap-2 mt-2">
+          <button type="button" id="btnCancel" class="px-3 py-2 border rounded">Cancel</button>
+          <button type="submit" class="px-3 py-2 bg-gray-900 text-white rounded">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/public/js/transactions.js"></script>
+` }) %>
